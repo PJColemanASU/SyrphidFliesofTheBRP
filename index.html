@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Syrphid Flies of the Blue Ridge Parkway</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.1/css/all.css">
+
+<style>
+
+    body {
+      margin:0;
+      padding:0;
+      font-family:
+      sans-serif;
+      }
+
+    banner {
+      position: absolute ;
+      height: 5vh;
+      width: 30vw;
+      left: 20px;
+      top: 5px;
+      padding: 8px 2%;
+      margin: 0;
+      background: rgba(255,121,0,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 3px;
+      color: whitesmoke;
+      font-size: 1.5em;
+      z-index: 800;
+      }
+
+    #map {
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:1440px;
+      height: 770px;
+     }
+
+		 section {
+      height: 100vh;
+			position: absolute;
+      top: 50px;
+			left: 20px;
+			width: 31vw;
+			margin: 20px auto;
+			padding: 0 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+</style>
+
+</head>
+<body>
+
+	<banner>Syrphid Flies of the Blue Ridge Parkway</banner>
+
+    <div id='map'></div>
+		<section>
+		<h2>The BRP Pollinator Project</h2>
+
+		<p>The Blue Ridge Parkway Syrphid Fly Inventory is part of a larger pollinator survey with the goal of documenting all species of pollinators harbored by the parkway. Although most of the buzz surrounds bees, syrphid flies are thought to be equally important pollinators of native plants. Despite their percieved importance, studies focused on Syrphid Flies are relatively scarce. Before 2019, there were no official records of any syrphid flies along the Blue Ridge Parkway, a unit of the National Parks System.</p>
+
+		<p>It is difficult to protect what one does not know they have, and to that end a novel study was begun to explore the diversity of syrphid flies along the parkway. Specimens were collected at over 60 sites along the parkway and have currently yielded nearly 70 species of syrphid fly.
+		</p>
+
+    <p>Hover over a point to see the species living there!
+
+    <p> <img src="assets/fly.jpg" alt="">
+
+		<p> <a href="https://www2.ipm.ucanr.edu/natural-enemies/syrphids/">Learn More About Syrphids!</a></p>
+		<p>Map authored by PJ Coleman</p>
+
+	</section>
+
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+
+
+<script>
+
+    var map = L.map('map', {
+        center: [36.5, -82.2],
+        zoom: 7.5
+    });
+
+    var CartoDB_VoyagerNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 20
+}).addTo(map);
+
+    states = L.geoJson.ajax("assets/data.geojson",{
+
+
+			onEachFeature: function (feature, layer) {
+layer.bindPopup(feature.properties.Species);
+},
+
+        attribution: 'Data: US Census Bureau, Map: PJ Coleman',
+        pointToLayer: function (feature, x){
+          return L.circleMarker(x, {
+            color: '#ff7900',
+            opacity: 1,
+            weight: 2,
+            fillColor: '#ff7900',
+            fillOpacity: .6,
+            radius: calcRadius(feature.properties.Count)
+          }).on({
+                  mouseover: function(e){
+                    this.setStyle({color: 'blue',fillColor: 'blue'});
+                                        },
+                  mouseout: function(e){
+                    this.setStyle({color:'#ff7900', fillColor: '#ff7900'});
+                  } })},});
+
+
+
+
+    var minValue = 3;
+    var minRadius = 7;
+
+    function calcRadius(val) {
+            return 1.00 * Math.pow(val/minValue,.5) * minRadius;
+            }
+
+    L.control.scale({position: 'bottomright'}).addTo(map);
+
+
+    states.addTo(map);
+
+</script>
+</body>
+</html>
